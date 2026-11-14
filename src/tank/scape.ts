@@ -1,6 +1,6 @@
-import { Group, Mesh, MeshPhysicalMaterial, Object3D, TorusGeometry } from 'three';
+import { BufferAttribute, Group, Matrix4, Mesh, MeshPhysicalMaterial, Object3D, TorusGeometry, Vector3 } from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { WATER_Y } from './dims';
+import { TANK, WATER_Y } from './dims';
 import { materialFor } from './materials';
 import { patch } from './shaders';
 import { surfaceY } from './substrate';
@@ -68,6 +68,37 @@ export const LAYOUT: Spot[] = [
   ['crypt_flamingo_0', 0.125, 0.105, 260, 0.8],
 ];
 
+/** Glass and surface limits for plants: leaves that would pass through a
+ * pane are pressed flat against it, and stems that would break the
+ * surface bend under it, as they do in the real tank. Each placement gets
+ * its own copy of the geometry (the clamp depends on where it stands). */
+const INSET = 0.004;
+function keepInside(plant: Object3D): void {
+  plant.updateMatrixWorld(true);
+  const v = new Vector3();
+  const inv = new Matrix4();
+  plant.traverse((o) => {
+    const m = o as Mesh;
+    if (!m.isMesh) return;
+    m.geometry = m.geometry.clone();
+    const pos = m.geometry.attributes.position as BufferAttribute;
+    inv.copy(m.matrixWorld).invert();
+    let changed = false;
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld);
+      const x = Math.max(-TANK.hx + INSET, Math.min(TANK.hx - INSET, v.x));
+      const z = Math.max(-TANK.hz + INSET, Math.min(TANK.hz - INSET, v.z));
+      const y = Math.min(WATER_Y - 0.003, v.y);
+      if (x !== v.x || y !== v.y || z !== v.z) {
+        v.set(x, y, z).applyMatrix4(inv);
+        pos.setXYZ(i, v.x, v.y, v.z);
+        changed = true;
+      }
+    }
+    if (changed) m.geometry.computeVertexNormals();
+  });
+}
+
 export interface Scape {
   root: Group;
   /** Meshes that block light (for the light-shaft depth map). */
@@ -95,6 +126,7 @@ export async function buildScape(): Promise<Scape> {
     p.position.set(x, y ?? surfaceY(x, z) - 0.004, z);
     p.rotation.set(0, (yaw * Math.PI) / 180, 0);
     p.scale.setScalar(scale);
+    keepInside(p);
     root.add(p);
     occluders.push(p);
   }

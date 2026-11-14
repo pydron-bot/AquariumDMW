@@ -39,6 +39,9 @@ export interface PatchOptions {
 
 const PARS_VERTEX = /* glsl */ `
 uniform float uTime;
+uniform vec3 uBoxMin;
+uniform vec3 uBoxMax;
+uniform float uWaterY;
 uniform float uSwayAmt;
 uniform float uSway;
 varying vec3 vTkWorld;
@@ -58,6 +61,14 @@ const SWAY_VERTEX = /* glsl */ `
     float k = uSwayAmt * uSway * h * h;
     transformed.x += k * (sin(uTime * 0.8 + ph + h * 18.0) + 0.35 * sin(uTime * 2.1 + ph * 1.7 + h * 41.0));
     transformed.z += k * 0.7 * cos(uTime * 0.63 + ph * 1.3 + h * 15.0);
+    // keep swaying tips inside the glass and under the surface
+    mat4 tkM = modelMatrix;
+    #ifdef USE_INSTANCING
+    tkM = modelMatrix * instanceMatrix;
+    #endif
+    vec3 tkP = (tkM * vec4(transformed, 1.0)).xyz;
+    vec3 tkC = clamp(tkP, uBoxMin + vec3(0.003, 0.0, 0.003), vec3(uBoxMax.x, uWaterY, uBoxMax.z) - vec3(0.003));
+    if (tkC != tkP) transformed = (inverse(tkM) * vec4(tkC, 1.0)).xyz;
   #elif TK_SWAY == 2
     float h = max(-transformed.y, 0.0);
     float k = uSwayAmt * uSway * h * h;
