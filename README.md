@@ -36,7 +36,7 @@ writes PNGs; `--eval "<js>"` runs against `window.__tank` first (e.g.
 | `src/post.ts` | Volumetric light shafts (ray-marched against a light-space depth map), DOF, bloom, grade |
 | `src/tank/scape.ts` | Plant layout table (positions read off the front photo) |
 | `src/tank/life.ts` | Boids school + swim shader, feeding, snails, bubbles, suspended particles |
-| `src/tank/glass.ts` | Glass, edges, condensation, lid, water surface + total-internal-reflection mirror |
+| `src/tank/glass.ts` | Glass, edges, condensation (open top, no lid), water surface + total-internal-reflection mirror |
 | `src/tank/salvinia.ts` | Floating mat (instanced) and root curtain (alpha cards) |
 
 Units are metres. Tank space: origin at the centre of the tank floor,

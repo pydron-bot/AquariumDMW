@@ -40,7 +40,7 @@ def cyl(p, mat, c, r, z0, z1, sides=24, r1=None, color=(1, 1, 1)):
 
 
 def tank_trim():
-    """Black plastic: bottom frame and top rim with a centre brace."""
+    """Black plastic: bottom frame and an open top rim (no lid)."""
     p = Part()
     ox, oy = HX + G, HY + G
     t = 0.008
@@ -50,17 +50,13 @@ def tank_trim():
     box(p, "trim", (-ox - t, -oy, -0.012), (-ox, oy, 0.02))
     box(p, "trim", (ox, -oy, -0.012), (ox + t, oy, 0.02))
     box(p, "trim", (-ox, -oy, -0.012), (ox, oy, -0.004))
-    # top rim (2 cm) with an inward lip that holds the lid
+    # top rim (2 cm)
     z0, z1 = H - 0.016, H + 0.006
     box(p, "trim", (-ox - t, -oy - t, z0), (ox + t, -oy, z1))
     box(p, "trim", (-ox - t, oy, z0), (ox + t, oy + t, z1))
     box(p, "trim", (-ox - t, -oy, z0), (-ox, oy, z1))
     box(p, "trim", (ox, -oy, z0), (ox + t, oy, z1))
-    lip = 0.01
-    box(p, "trim", (-ox, -oy, H - 0.004), (ox, -oy + lip, H))
-    box(p, "trim", (-ox, oy - 0.03, H - 0.004), (ox, oy, H))  # rear strip (cut-outs for cables)
-    box(p, "trim", (-ox, -oy, H - 0.004), (-ox + lip, oy, H))
-    box(p, "trim", (ox - lip, -oy, H - 0.004), (ox, oy, H))
+    # open top: no lid, so no lid-support lip or rear strip
     return p
 
 

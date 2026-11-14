@@ -19,7 +19,8 @@ import { tex } from './materials';
 import { patch, U } from './shaders';
 
 /**
- * Glass, condensation, lid and the water surface.
+ * Glass, condensation and the water surface. The tank is open-topped (no
+ * lid), so only the walls above the waterline carry drops.
  * - Panes add reflections only (additive), so they never darken the view.
  * - The pane edges glow green-cyan like real float glass seen edge-on.
  * - Above the waterline the glass is fogged with drops, as in the photos.
@@ -82,13 +83,13 @@ export function buildGlass(withMirror: boolean): Glass {
     }
   }
 
-  // Condensation band between the waterline and the rim, and on the lid.
+  // Condensation band between the waterline and the rim.
   const drops = tex('drops.png', false, true);
-  const dropMat = (repeat: Vector2, lid = false): MeshStandardMaterial => {
+  const dropMat = (repeat: Vector2): MeshStandardMaterial => {
     const t = drops.clone();
     t.repeat.copy(repeat);
     const m = new MeshStandardMaterial({
-      color: lid ? 0x9aa4ad : 0xdfe8f0,
+      color: 0xdfe8f0,
       roughness: 0.12,
       normalMap: t,
       alphaMap: t as Texture,
@@ -103,7 +104,7 @@ export function buildGlass(withMirror: boolean): Glass {
     m.onBeforeCompile = (s) => {
       s.fragmentShader = s.fragmentShader.replace(
         '#include <alphamap_fragment>',
-        `diffuseColor.a *= ${lid ? '0.03 + 0.3' : '0.08 + 0.55'} * texture2D( alphaMap, vAlphaMapUv ).a;`,
+        'diffuseColor.a *= 0.08 + 0.55 * texture2D( alphaMap, vAlphaMapUv ).a;',
       );
     };
     return patch(m, { water: false });
@@ -124,16 +125,6 @@ export function buildGlass(withMirror: boolean): Glass {
     s.renderOrder = 9;
     root.add(s);
   }
-  // Lid: clear glass (reflections) plus the drops on its underside.
-  const lid = new Mesh(new BoxGeometry(hx * 2 - 0.02, 0.003, hz * 2 - 0.04), paneMat);
-  lid.position.set(0, h - 0.0025, -0.005);
-  lid.renderOrder = 10;
-  root.add(lid);
-  const lidDrops = new Mesh(new PlaneGeometry(hx * 2 - 0.02, hz * 2 - 0.04), dropMat(new Vector2(6, 3), true));
-  lidDrops.rotation.x = Math.PI / 2;
-  lidDrops.position.set(0, h - 0.0045, -0.005);
-  lidDrops.renderOrder = 9;
-  root.add(lidDrops);
 
   // Water surface seen from above: clear, slightly rippled, reflective.
   const surfTop = new MeshPhysicalMaterial({

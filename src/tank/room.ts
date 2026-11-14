@@ -73,7 +73,7 @@ export function buildRoom(renderer: WebGLRenderer, scene: Scene): Room {
   shelf.position.set(0, -0.38, 0.27);
   root.add(shelf);
 
-  // Main light: the bar's white LEDs, straight down through the lid.
+  // Main light: the bar's white LEDs, straight down into the open top.
   const sun = new DirectionalLight(0xf4f6ff, 3.4);
   sun.position.copy(U.uLightDir.value).multiplyScalar(0.8);
   sun.target.position.set(0, 0, 0);
