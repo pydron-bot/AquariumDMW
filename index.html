@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Tank</title>
+    <meta name="description" content="A three.js recreation of a planted 10 gallon tank." />
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div id="loading">Filling the tank…</div>
+    <pre id="stats" hidden></pre>
+    <button id="menu-toggle" aria-label="Menu">☰</button>
+    <div id="ui">
+      <div class="title">Tank <span>three.js tech demo</span></div>
+      <div class="row" aria-label="View">
+        <button data-view="front">Front</button>
+        <button data-view="corner">Corner</button>
+        <button data-view="left">Side</button>
+        <button data-view="top">Top</button>
+        <button data-view="macro">Macro</button>
+        <button data-view="inside">Inside</button>
+        <button data-view="fish" title="Click again for the next fish">Fish cam</button>
+      </div>
+      <div class="row">
+        <button id="feed">Feed</button>
+        <span class="hint">or tap the water</span>
+      </div>
+      <div class="row" aria-label="Light">
+        <button data-light="rgb" class="on">RGB</button>
+        <button data-light="day">Daylight</button>
+        <button data-light="moon">Moonlight</button>
+      </div>
+      <div class="row fx">
+        <label><input type="checkbox" data-fx="shafts" />Light shafts</label>
+        <label><input type="checkbox" data-fx="caustics" />Caustics</label>
+        <label><input type="checkbox" data-fx="dof" />Depth of field</label>
+        <label><input type="checkbox" data-fx="bloom" />Bloom</label>
+        <label><input type="checkbox" data-fx="mirror" />Surface mirror</label>
+        <label><input type="checkbox" data-fx="water" />Water tint</label>
+        <label><input type="checkbox" data-fx="stats" />Stats</label>
+      </div>
+      <div class="row" aria-label="Quality">
+        <button data-q="high">High</button>
+        <button data-q="medium">Medium</button>
+        <button data-q="low">Low</button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
