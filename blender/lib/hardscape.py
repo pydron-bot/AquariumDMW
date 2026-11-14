@@ -42,18 +42,19 @@ def driftwood():
     p = Part()
     for idx, (name, pts) in enumerate(WOOD.items()):
         arr = np.array(pts, dtype=float)
-        path = catmull(arr[:, :3], 9)
+        path = catmull(arr[:, :3], 16)
         radii = np.interp(np.linspace(0, len(arr) - 1, len(path)), np.arange(len(arr)), arr[:, 3])
         seed = 300 + idx
 
         def bump(pos, d, i, k, seed=seed, n=len(path)):
             q = (pos + d * 0.01)[None, :] * 70
             knot = fbm3(q, 3, seed)[0]
-            a = 2 * math.pi * k / 14
-            ridge = math.sin(3 * a + i * 0.35 + seed) * 0.12 + math.sin(7 * a - i * 0.6) * 0.05
+            a = 2 * math.pi * k / 22
+            ridge = (math.sin(3 * a + i * 0.2 + seed) * 0.12 + math.sin(7 * a - i * 0.33) * 0.05
+                     + math.sin(13 * a + i * 0.5) * 0.025)
             return max(0.45, 1 + 0.32 * knot + ridge)
 
-        v, f, uv = tube(path, radii, 14, uv_scale=1.0, bump=bump)
+        v, f, uv = tube(path, radii, 22, uv_scale=1.0, bump=bump)
         tone = 0.85 + 0.3 * ((idx * 37) % 10) / 10
         p.add(v, f, uv, "bark", (tone, tone, tone))
     return p

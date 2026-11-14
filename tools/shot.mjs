@@ -33,6 +33,7 @@ const gl = await page.evaluate(() => {
   return d ? g.getParameter(d.UNMASKED_RENDERER_WEBGL) : 'unknown';
 });
 console.log('renderer:', gl);
+if (a.eval) await page.evaluate(a.eval);
 for (const v of views) {
   await page.evaluate((v) => window.__tank.setView(v, true), v);
   await page.waitForTimeout(Number(a.wait ?? 6) * 1000);

@@ -34,7 +34,7 @@ export function buildRoom(renderer: WebGLRenderer, scene: Scene): Room {
 
   const pmrem = new PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environmentIntensity = 0.22;
+  scene.environmentIntensity = 0.16;
 
   // Back wall: a soft pool of purple light behind and above the tank.
   const wall = new MeshStandardMaterial({ color: 0xbdb6c4, roughness: 0.95 });
@@ -89,12 +89,14 @@ export function buildRoom(renderer: WebGLRenderer, scene: Scene): Room {
   sun.shadow.bias = -0.0003;
   sun.shadow.normalBias = 0.0015;
   sun.shadow.radius = 3;
+  // Floating leaves are thin and translucent: their shade isn't black.
+  sun.shadow.intensity = 0.72;
   root.add(sun, sun.target);
 
   // The bar's red/green/blue diodes: a purple-magenta fill from slightly
   // in front, no shadows.
-  const tint = new DirectionalLight(0xa070ff, 0.8);
-  tint.position.set(-0.2, 0.8, 0.5);
+  const tint = new DirectionalLight(0xa070ff, 0.3);
+  tint.position.set(-0.2, 0.9, 0.3);
   root.add(tint);
 
   const hemi = new HemisphereLight(0x9a7cd0, 0x2a2030, 0.45);
@@ -111,9 +113,9 @@ export function buildRoom(renderer: WebGLRenderer, scene: Scene): Room {
         sun.color.set(0xf4f6ff);
         sun.intensity = 3.4;
         tint.color.set(0xa070ff);
-        tint.intensity = 0.8;
+        tint.intensity = 0.3;
         hemi.color.set(0x9a7cd0);
-        hemi.intensity = 0.45;
+        hemi.intensity = 0.32;
         wallWash.value = 1;
         U.uScatter.value.setRGB(0.055, 0.075, 0.045);
       } else if (mode === 'day') {

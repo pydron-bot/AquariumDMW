@@ -54,7 +54,9 @@ export function buildSalvinia(nodeGeometry: BufferGeometry): Group {
   pts.forEach(([x, z], i) => {
     q.setFromAxisAngle(up, r() * Math.PI * 2);
     s.setScalar(0.75 + r() * 0.55);
-    p.set(x, WATER_Y + 0.0002, z);
+    // Sitting in the surface: the undersides are wet, so they show through
+    // the mirror of the surface seen from below.
+    p.set(x, WATER_Y - 0.0018, z);
     m.compose(p, q, s);
     mesh.setMatrixAt(i, m);
   });
@@ -65,7 +67,7 @@ export function buildSalvinia(nodeGeometry: BufferGeometry): Group {
   g.add(mesh);
 
   // Root curtain: crossed alpha cards under the nodes.
-  const card = new PlaneGeometry(0.018, 1, 1, 8);
+  const card = new PlaneGeometry(0.024, 1, 1, 8);
   card.translate(0, -0.5, 0);
   const uv = card.attributes.uv;
   for (let i = 0; i < uv.count; i++) uv.setY(i, 1 - uv.getY(i));
@@ -74,20 +76,21 @@ export function buildSalvinia(nodeGeometry: BufferGeometry): Group {
   const rootsMat = patch(
     new MeshStandardMaterial({
       map: rootsTex,
-      alphaTest: 0.3,
+      alphaTest: 0.36,
       alphaToCoverage: true,
+      color: 0xf0d9a0,
       side: DoubleSide,
       roughness: 0.8,
     }),
     { caustics: true, sway: 0.006, swayMode: 'hang', translucent: true },
   );
-  const n = Math.floor(pts.length * 0.55);
+  const n = Math.floor(pts.length * 0.42);
   const roots = new InstancedMesh(crossed, rootsMat, n);
   for (let i = 0; i < n; i++) {
     const [x, z] = pts[Math.floor(r() * pts.length)];
     // Longer near the middle of the mat, shorter at the glass.
     const edge = Math.min(hx - Math.abs(x), hz - Math.abs(z));
-    const len = (0.018 + r() * 0.05) * Math.min(1, 0.45 + edge * 14);
+    const len = (0.012 + r() ** 1.7 * 0.07) * Math.min(1, 0.5 + edge * 14);
     q.setFromAxisAngle(up, r() * Math.PI);
     s.set(0.7 + r() * 0.6, len, 1);
     p.set(x, WATER_Y - 0.0005, z);

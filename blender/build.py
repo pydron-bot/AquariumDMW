@@ -52,7 +52,7 @@ def build_plants(out):
         ("crypt_wendtii", lambda s: plants.crypt(s, 11, 1.0), 3),
         ("crypt_flamingo", lambda s: plants.crypt(s, 8, 1.0, flamingo=True), 2),
         ("grass", lambda s: plants.grass(s, 14, 1.0), 3),
-        ("bacopa", lambda s: plants.stem_bunch(s, "bacopa", 8, 0.2), 3),
+        ("bacopa", lambda s: plants.stem_bunch(s, "bacopa", 11, 0.2), 3),
         ("ludwigia", lambda s: plants.stem_bunch(s, "ludwigia", 6, 0.17), 2),
         ("najas", lambda s: plants.stem_bunch(s, "najas", 7, 0.22), 2),
     ]

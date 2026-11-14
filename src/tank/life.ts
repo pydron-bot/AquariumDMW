@@ -128,7 +128,7 @@ export class Life {
     for (let i = 0; i < FISH; i++) {
       const p = new Vector3((R() - 0.5) * 0.3, 0.12 + R() * 0.1, (R() - 0.5) * 0.12);
       const v = new Vector3(R() - 0.5, 0, R() - 0.5).setLength(0.04);
-      this.fish.push({ p, v, q: new Quaternion(), phase: R() * 6, wander: new Vector3(), dart: 0, turn: 0, size: 0.85 + R() * 0.25 });
+      this.fish.push({ p, v, q: new Quaternion(), phase: R() * 6, wander: new Vector3(), dart: 0, turn: 0, size: 0.95 + R() * 0.25 });
     }
     // --- snails on the front glass and a leaf or two
     let snailSrc: Object3D | null = null;

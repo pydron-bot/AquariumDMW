@@ -62,10 +62,10 @@ const clock = new Timer();
 // ------------------------------------------------------------------ views
 
 const VIEWS: Record<Exclude<View, 'fish'>, { pos: [number, number, number]; target: [number, number, number]; fov: number }> = {
-  front: { pos: [0, 0.2, 0.6], target: [0, 0.165, 0], fov: 40 },
+  front: { pos: [0, 0.235, 0.7], target: [0, 0.19, 0], fov: 40 },
   corner: { pos: [0.4, 0.1, 0.42], target: [0.04, 0.15, 0], fov: 40 },
   left: { pos: [-0.46, 0.2, 0.3], target: [0.0, 0.15, 0], fov: 40 },
-  top: { pos: [0, 0.72, 0.36], target: [0, 0.2, -0.02], fov: 40 },
+  top: { pos: [0, 0.5, 0.56], target: [0, 0.24, -0.04], fov: 40 },
   macro: { pos: [0.075, 0.13, 0.19], target: [0.03, 0.12, 0.0], fov: 32 },
   inside: { pos: [0.18, 0.11, 0.09], target: [-0.1, 0.15, -0.05], fov: 55 },
 };
@@ -88,6 +88,7 @@ function setView(v: View, instant = false): void {
   const t = new Vector3(...def.target);
   const p = new Vector3(...def.pos).sub(t).multiplyScalar(v === 'macro' || v === 'inside' ? 1 : fitScale()).add(t);
   if (instant) {
+    snapFocus = 4;
     camera.position.copy(p);
     controls.target.copy(t);
     camera.fov = def.fov;
@@ -157,16 +158,23 @@ function feedRandom(): void {
 let focusTargets: Object3D[] = [];
 let focus = 0.6;
 let frameNo = 0;
-function updateFocus(): void {
+function updateFocus(dt: number): void {
   let want = focus;
   if (view === 'fish') {
     want = camera.position.distanceTo(life.fishPosition(life.focusFish, new Vector3()));
-  } else if (frameNo % 6 === 0) {
+  } else if (frameNo % 3 === 0 || fly) {
     ray.setFromCamera(new Vector2(0, 0), camera);
     const hits = ray.intersectObjects(focusTargets, true);
     want = hits.length ? hits[0].distance : camera.position.distanceTo(controls.target);
   } else return;
-  focus += (want - focus) * (view === 'fish' ? 0.3 : 0.25);
+  focusWant = want;
+  void dt;
+}
+let focusWant = 0.6;
+let snapFocus = 0;
+function easeFocus(dt: number): void {
+  if (snapFocus > 0) snapFocus--;
+  focus = snapFocus > 0 ? focusWant : focus + (focusWant - focus) * (1 - Math.exp(-dt * 7));
   post.final.mat.uniforms.uFocus.value = focus;
 }
 
@@ -237,7 +245,8 @@ function frame(): void {
   }
   if (view === 'fish') updateFishCam(dt);
   else controls.update(dt);
-  updateFocus();
+  updateFocus(dt);
+  easeFocus(dt);
   renderer.info.reset();
   if (params.get('post') === '0') renderer.render(scene, camera);
   else post.composer.render(dt);

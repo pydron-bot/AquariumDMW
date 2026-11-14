@@ -369,7 +369,7 @@ def salvinia_roots(out, w=256, h=512, seed=101):
         xs = x + np.cumsum(r.normal(0, 0.35, len(t))) + sway * t * 60
         ys = t * length
         tone = r.uniform(0.75, 1.15)
-        c = np.array([150, 112, 62.0]) * tone
+        c = np.array([176, 136, 72.0]) * tone
         for i in range(0, len(t)):
             yi, xi = int(ys[i]), int(xs[i]) % w
             if yi >= h:
@@ -434,4 +434,4 @@ def all_leaves(out):
     plain(out, "stem_green", (80, 120, 50), seed=290)
     plain(out, "stem_red", (122, 60, 44), seed=291)
     plain(out, "rhizome", (58, 72, 38), seed=292)
-    plain(out, "roots_white", (196, 190, 168), seed=293)
+    plain(out, "roots_white", (150, 136, 104), seed=293)

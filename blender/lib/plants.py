@@ -86,8 +86,14 @@ def roots(part, r, origin, n, length, mat="roots_white"):
         d = np.array([r.normal(0, 0.6), r.normal(0, 0.6), -1.0])
         d /= np.linalg.norm(d)
         L = length * r.uniform(0.5, 1.2)
-        pts = [np.asarray(origin) + d * L * t + np.array([0, 0, -0.3 * L * t * t]) for t in (0, 0.33, 0.66, 1)]
-        stem(part, pts, 0.0007, 0.0003, mat, sides=4, per=3)
+        # wandering, not straight: roots kink around grains and wood
+        pts, p = [np.asarray(origin, float)], np.asarray(origin, float)
+        for k in range(5):
+            d = d + np.array([r.normal(0, 0.45), r.normal(0, 0.45), r.normal(-0.2, 0.2)])
+            d /= np.linalg.norm(d)
+            p = p + d * L / 5
+            pts.append(p)
+        stem(part, pts, 0.00045, 0.0002, mat, sides=4, per=4)
 
 
 # ---------------------------------------------------------------- species
@@ -112,10 +118,10 @@ def anubias(seed, leaves=8, size=1.0):
         tip = base + d * pl
         stem(p, [base, base + d * pl * 0.5 + np.array([0, 0, pl * 0.1]), tip], 0.0017, 0.0013, "stem_green",
              per=3, color=tint(r, 0.8))
-        L = r.uniform(0.045, 0.075) * size * (0.75 if k % 3 == 0 else 1)
+        L = r.uniform(0.04, 0.062) * size * (0.75 if k % 3 == 0 else 1)
         m = frame(tip, yaw=-yaw, pitch=elev - math.radians(r.uniform(15, 35)), roll=r.uniform(-0.4, 0.4))
-        add_leaf(p, "leaf_anubias", m, tint(r, r.uniform(0.75, 1.05)), length=L, width=L * r.uniform(0.48, 0.58),
-                 shape=(0.42, 0.62), nu=6, nv=11, droop=r.uniform(0.1, 0.45), cup=0.12, wave=0.0006,
+        add_leaf(p, "leaf_anubias", m, tint(r, r.uniform(0.75, 1.05)), length=L, width=L * r.uniform(0.6, 0.72),
+                 shape=(0.5, 0.55), nu=6, nv=11, droop=r.uniform(0.1, 0.45), cup=0.12, wave=0.0006,
                  wave_freq=2.0, seed=seed * 50 + k, base_w=0.25)
     return p
 
@@ -229,9 +235,11 @@ def stem_bunch(seed, kind, stems=8, height=0.18, size=1.0):
                         roots(p, r, at, 1, 0.015)
                     continue
                 pair = 2
-                L = 0.016 * size * (0.6 + 0.4 * min(1, (1 - t) * 4)) * r.uniform(0.85, 1.1)
-                elev_deg = 25 + 35 * t
-                Wr, shape, nu, nv, mat = 0.62, (0.5, 0.55), 4, 6, "leaf_bacopa"
+                if r.random() < 0.08:
+                    continue  # a lost leaf pair
+                L = 0.0135 * size * (0.55 + 0.45 * min(1, (1 - t) * 4)) * r.uniform(0.8, 1.15)
+                elev_deg = r.uniform(15, 40) + 30 * t
+                Wr, shape, nu, nv, mat = 0.7, (0.5, 0.5), 4, 6, "leaf_bacopa"
             elif kind == "ludwigia":
                 pair = 2
                 L = 0.026 * size * (0.55 + 0.45 * min(1, (1 - t) * 3)) * r.uniform(0.85, 1.1)
@@ -242,7 +250,7 @@ def stem_bunch(seed, kind, stems=8, height=0.18, size=1.0):
                 L = r.uniform(0.010, 0.018) * size
                 elev_deg = r.uniform(20, 55)
                 Wr, shape, nu, nv, mat = 0.08, (0.2, 0.6), 1, 3, "leaf_najas"
-            rot = rot0 + k * (math.pi / 2 if pair == 2 else 0.9)
+            rot = rot0 + k * (math.pi / 2 if pair == 2 else 0.9) + r.normal(0, 0.25)
             col = tint(r, 0.85 + 0.25 * t)
             if kind == "ludwigia":
                 col = tint(r, 0.9 + 0.2 * t)

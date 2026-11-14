@@ -162,9 +162,9 @@ def fish_texture(out, W=512, H=256):
     z = (ZMIN + v * (ZMAX - ZMIN))       # in units of L
     t, b = top(s), bottom(s)
     rel = np.clip((z - b) / np.maximum(t - b, 1e-3), 0, 1)  # 0 belly .. 1 back
-    back = np.array([92, 82, 52.0])
-    belly = np.array([212, 206, 196.0])
-    col = T.mix(belly, back, T.smooth(0.35, 0.95, rel))
+    back = np.array([70, 58, 40.0])
+    belly = np.array([176, 168, 150.0])
+    col = T.mix(belly, back, T.smooth(0.2, 0.75, rel))
     # lateral stripe: dark band under a bright gold line
     stripe_c = 0.52 + 0.04 * (s - 0.5)
     band = np.exp(-((rel - (stripe_c - 0.12)) / 0.09) ** 2) * T.smooth(0.1, 0.25, s)

@@ -84,11 +84,11 @@ export function buildGlass(withMirror: boolean): Glass {
 
   // Condensation band between the waterline and the rim, and on the lid.
   const drops = tex('drops.png', false, true);
-  const dropMat = (repeat: Vector2): MeshStandardMaterial => {
+  const dropMat = (repeat: Vector2, lid = false): MeshStandardMaterial => {
     const t = drops.clone();
     t.repeat.copy(repeat);
     const m = new MeshStandardMaterial({
-      color: 0xdfe8f0,
+      color: lid ? 0x9aa4ad : 0xdfe8f0,
       roughness: 0.12,
       normalMap: t,
       alphaMap: t as Texture,
@@ -103,7 +103,7 @@ export function buildGlass(withMirror: boolean): Glass {
     m.onBeforeCompile = (s) => {
       s.fragmentShader = s.fragmentShader.replace(
         '#include <alphamap_fragment>',
-        'diffuseColor.a *= 0.08 + 0.55 * texture2D( alphaMap, vAlphaMapUv ).a;',
+        `diffuseColor.a *= ${lid ? '0.03 + 0.3' : '0.08 + 0.55'} * texture2D( alphaMap, vAlphaMapUv ).a;`,
       );
     };
     return patch(m, { water: false });
@@ -129,7 +129,7 @@ export function buildGlass(withMirror: boolean): Glass {
   lid.position.set(0, h - 0.0025, -0.005);
   lid.renderOrder = 10;
   root.add(lid);
-  const lidDrops = new Mesh(new PlaneGeometry(hx * 2 - 0.02, hz * 2 - 0.04), dropMat(new Vector2(6, 3)));
+  const lidDrops = new Mesh(new PlaneGeometry(hx * 2 - 0.02, hz * 2 - 0.04), dropMat(new Vector2(6, 3), true));
   lidDrops.rotation.x = Math.PI / 2;
   lidDrops.position.set(0, h - 0.0045, -0.005);
   lidDrops.renderOrder = 9;
