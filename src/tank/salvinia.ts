@@ -15,6 +15,7 @@ import {
 import { OCCLUDER_LAYER } from '../post';
 import { TANK, WATER_Y, rng } from './dims';
 import { materialFor, tex } from './materials';
+import { RING } from './scape';
 import { patch } from './shaders';
 
 /**
@@ -30,7 +31,10 @@ export function buildSalvinia(nodeGeometry: BufferGeometry): Group {
 
   // Gaps: feeding ring, the sponge filter's outlet, a few open patches.
   const holes: [number, number, number][] = [
-    [0.15, -0.055, 0.037],
+    [RING.x, RING.z, 0.037],
+    // driftwood breaking the surface
+    [0.168, -0.102, 0.013],
+    [0.022, -0.066, 0.011],
     [-0.15, -0.065, 0.028],
     [0.03, 0.02, 0.012],
     [-0.06, 0.07, 0.01],

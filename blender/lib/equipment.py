@@ -137,24 +137,26 @@ def sponge_filter(x=-0.168, y=0.05):
 
 
 def internal_filters():
-    """Two small black submersible filters on the back glass, upper left."""
+    """The black pump: a dual unit on the LEFT glass, upper part of the tank,
+    outlets pointing into the tank."""
     p = Part()
-    for k, x in enumerate((-0.222, -0.19)):
-        y = HY - 0.02
+    x = -HX + 0.015
+    for k, y in enumerate((-0.005, 0.027)):
         z0 = 0.165
         box(p, "black_plastic", (x - 0.014, y - 0.015, z0), (x + 0.014, y + 0.015, z0 + 0.045))
         # intake grille band and outlet nozzle
         box(p, "black_plastic", (x - 0.0145, y - 0.0155, z0 + 0.004), (x + 0.0145, y + 0.0155, z0 + 0.012))
-        nz = [(x + 0.014, y - 0.004, z0 + 0.03), (x + 0.024, y - 0.004, z0 + 0.03)]
+        nz = [(x + 0.014, y, z0 + 0.03), (x + 0.026, y, z0 + 0.03)]
         v, f, uv = tube(np.array(nz), [0.003, 0.0026], 10)
         p.add(v, f, uv, "black_plastic")
-        # suction cups on the back glass
+        # suction cups on the left glass
         for zc in (z0 + 0.012, z0 + 0.034):
-            pts = [(x, HY - 0.005, zc), (x, HY - 0.0005, zc)]
+            pts = [(-HX + 0.005, y, zc), (-HX + 0.0005, y, zc)]
             v, f, uv = tube(np.array(pts), [0.004, 0.0065], 14)
             p.add(v, f, uv, "suction_cup")
-        cable = catmull([(x, y, z0 + 0.045), (x + 0.004, y + 0.004, 0.24), (x + 0.008, y + 0.01, 0.3),
-                         (x + 0.012, HY + 0.02, 0.335), (x + 0.02, HY + 0.05, 0.25), (x + 0.03, HY + 0.06, 0.0)], 8)
+        # cord up the left glass, over the rim, down the outside
+        cable = catmull([(x, y, z0 + 0.045), (x - 0.004, y + 0.004, 0.24), (x - 0.008, y + 0.01, 0.3),
+                         (-HX - 0.012, y + 0.02, 0.335), (-HX - 0.03, y + 0.04, 0.25), (-HX - 0.035, y + 0.05, 0.0)], 8)
         v, f, uv = tube(cable, [0.0021] * len(cable), 6, cap=False)
         p.add(v, f, uv, "cable")
     return p

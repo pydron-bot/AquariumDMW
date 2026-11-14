@@ -99,6 +99,9 @@ function keepInside(plant: Object3D): void {
   });
 }
 
+/** Floating feeding ring position (front right). */
+export const RING = { x: 0.15, z: 0.06 };
+
 export interface Scape {
   root: Group;
   /** Meshes that block light (for the light-shaft depth map). */
@@ -140,7 +143,7 @@ export async function buildScape(): Promise<Scape> {
     else if (child.name !== 'trim') occluders.push(child);
   }
 
-  // Floating feeding ring, back right (see the top-down photo), with a few
+  // Floating feeding ring, front right, with a few
   // stem cuttings drifting inside it.
   const ringMat = patch(
     new MeshPhysicalMaterial({ color: 0xcfd6d6, roughness: 0.2, transparent: true, opacity: 0.55, clearcoat: 1 }),
@@ -148,7 +151,7 @@ export async function buildScape(): Promise<Scape> {
   );
   const ring = new Mesh(new TorusGeometry(0.034, 0.0035, 10, 48), ringMat);
   ring.rotation.x = Math.PI / 2;
-  ring.position.set(0.15, WATER_Y + 0.001, -0.055);
+  ring.position.set(RING.x, WATER_Y + 0.001, RING.z);
   ring.name = 'feeding_ring';
   root.add(ring);
   const cutting = templates.get('ludwigia_1');
@@ -157,7 +160,7 @@ export async function buildScape(): Promise<Scape> {
       const c = cutting.clone();
       c.scale.setScalar(0.35);
       c.rotation.set(Math.PI / 2 - 0.2, k * 2.1, 0.3 * k);
-      c.position.set(0.15 + (k - 1) * 0.012, WATER_Y - 0.004, -0.055 + (k - 1) * 0.01);
+      c.position.set(RING.x + (k - 1) * 0.012, WATER_Y - 0.004, RING.z + (k - 1) * 0.01);
       root.add(c);
     }
   }
